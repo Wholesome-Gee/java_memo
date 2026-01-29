@@ -212,17 +212,4 @@ public class Main {
   }
 }
 ```
-3. ㄴ
-```java
-public class People {
-  public static void peopleList(String[] people) {
-    System.out.println(people.length);
-  }
-}
-
-public class Main {
-  public static void main(String[] args) {
-    People.peopleList("kim","lee","park","jeon");
-  }
-}
-```
+---
