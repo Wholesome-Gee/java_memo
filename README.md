@@ -213,3 +213,194 @@ public class Main {
 }
 ```
 ---
+### 📚 클래스와 인스턴스, 객체
+**🏷️ 메소드 = 함수**
+- 클래스는 설계도(정의)  
+- 인스턴스는 제품(호출)  
+- 클래스에서 인스턴스에 접근 x  
+- 인스턴스에서 클래스에 접근 O  
+- 클래스메소드에서 클래스변수에 접근 O  
+- 클래스메소드에서 인스턴스변수에 접근 X  
+- 인스턴스변수에서 클래스변수에 접근 O  
+- 인스턴스변수에서 인스턴스변수에 접근 O  
+```java
+class Smartphone {
+  static String brand = "SAMSUNG";  // 클래스 변수
+  String color;  // 인스턴스 변수
+
+  static void staticPrint() {
+    System.out.println(brand);  // 클래스메소드 → 클래스변수 접근 O
+    // System.out.println(color);  // 클래스메소드 → 인스턴스변수 접근 X
+  }
+  void instancePrint() {
+    System.out.println(brand);   // 인스턴스메소드 → 클래스변수 접근 O
+    System.out.println(color);  // 인스턴스메소드 → 인스턴스변수 접근 O
+  }
+}
+
+public class Main {
+  public static void main(String[] args) {
+    // Smartphone.color = "Red";  // 클래스 → 인스턴스변수 접근 X
+    Smartphone myPhone = new Smartphone();
+    myPhone.color = "White";  // 인스턴스 → 인스턴스변수 접근 O
+
+    myPhone.staticPrint();   // 인스턴스 → 클래스메소드 호출 O
+    myPhone.instancePrint();   // 인스턴스 → 인스턴스메소드 호출 O
+    Smartphone.staticPrint();  // 클래스 → 클래스메소드 호출 O
+    // Smartphone.instancePrint();  // 클래스 → 인스턴스메소드 호출 X
+  }
+}
+```
+---
+### 📚 스코프와 THIS
+**🏷️ this는 instance 그 자체를 가리킨다.**
+```java
+class Student {
+  String name = "전지용"; // 인스턴스 변수
+
+  void sayHello(String name) { // 지역 변수 (매개변수)
+    System.out.println("Hello, " + this.name);  // this는 인스턴스를 가리킨다.
+    System.out.println("Hello, " + name); 
+  }
+}
+
+public class Main {
+  public static void main(String[] args) {
+    Student student = new Student();
+    student.sayHello("한로로");
+    // "Hello, 전지용"
+    // "Hello, 한로로"
+  }
+}
+```
+---
+### 📚 생성자
+**🏷️ 생성자는 instance가 생성될 때, 가장 먼저 호출되는 메서드이다.**
+- 생성자의 이름은 클래스 이름과 똑같아야한다.
+- return이 없고, void도 쓰지 않는다.
+- 자동으로 딱 한번 실행된다.(instance가 생성될 때)
+- 생성자가 명시되어 있지 않아도 java가 기본생성자를 만들어준다.
+```java
+class Student {
+  String name; 
+
+  // 생성자 구문
+  public Student(){} // parameter있는 생성자와 parameter없는 생성자를 동시에 쓸 수도 있다.
+  public Student(String name) { 
+      this.name = name; // parameter의 name을 인스턴스 변수에 저장
+  }
+  
+  public void sayHello() {
+      System.out.println("제 이름은 " + this.name + "입니다.");
+  }
+}
+
+public class Main {
+  public static void main(String[] args) {
+    Student s1 = new Student("전지용"); // argument로 "전지용"을 전달
+    Student s2 = new Student("한로로"); // argument로 "한로로"를 전달
+
+    s1.sayHello(); // 제 이름은 전지용입니다.
+    s2.sayHello(); // 제 이름은 한로로입니다.
+  }
+}
+```
+---
+### 📚상속 
+**🏷️ 부모클래스 멤버를 자식클래스가 물려받아 사용할 수 있는것(extneds,super,sub,override,overloading)**
+- 상속을 사용하는 이유 : 코드의 재사용, 유지보수 관리, 다형성
+- 부모의 private 멤버를 자식 클래스가 참고할 수 있지만, 수정할 수 없다.
+- 부모의 메소드를 자식 메소드에서 재정의하고 싶을땐 `@Override`를 사용한다. (생략가능)
+- Override : 부모의 메소드를 자식클래스에서 재정의 하는것.
+- Overloading : 같은 클래스 내부에서 같은 이름의 메서드를 여러개 만드는것. (parameter의 타입이나 개수가 다르다)
+```java
+// 부모 클래스 (Super Class)
+class Phone {
+  private String model; // 인스턴스 변수
+
+  public Phone(){}
+  public Phone(String model) {  // 생성자
+    this.model = model;
+  }
+  public void call() {  // 인스턴스 메소드
+    System.out.println("calling...");
+  }
+}
+
+// 자식 클래스 (Sub Class)
+class Galaxy extends Phone { 
+  int price;  // 인스턴스 변수
+
+  Galaxy(String model, int price) {  // 생성자
+    super(model); // 부모의 생성자에 parameter를 전달
+    this.price = price;
+  }
+
+  // 메소드 오버라이딩 (부모의 기능을 재정의)
+  @Override 
+  void call() {
+    System.out.println("calling with Galaxy...");
+  }
+  // 자식클래스 메소드 추가
+  void samsungPay() { 
+    System.out.println("Run SamsungPay App...");
+  }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Galaxy myPhone = new Galaxy("S25 Ultra", 1500000);
+
+        System.out.println("모델명: " + myPhone.model); // 부모에게 물려받은 변수 사용
+        myPhone.call();     // 'calling with Galaxy...'
+        myPhone.samsungPay();  // 'Run SamsungPay App...'
+    }
+}
+```
+---
+### 📚 클래스 패스(Class Path)
+**🏷️ 클래스 패스 정의**
+- JVM이 애플리케이션을 실행할 때, 필요한 클래스 파일(.class)을 찾기 위해 참고하는 경로의 목록 (기본값: 현재경로)  
+
+**🏷️ 클래스 패스 지정하기**
+- 클래스 파일들이 여러 폴더에 분산되어 있을 때, 자바에게 탐색 위치를 알려주는 옵션   
+('94. 클래스와 경로의 관계' 영상 참고)
+```java
+// MainClassName.class 파일이 현재경로의 lib폴더안에 존재할 때
+java -classpath ".;lib" MainClassName
+```
+
+**🏷️ 환경변수**
+
+---
+### 📚 패키지
+**🏷️import로 다른 패키지의 클래스 사용하기**
+- import 패키지경로.클래스명 으로 다른 패키지의 클래스를 가져올 수 있다.
+```java
+// 파일경로: src/first/second/third/Calculator.java
+package first.second.third;
+
+public class Calculator {
+    public int plus(int a, int b) {
+        return a + b;
+    }
+}
+
+-----------------------------------------------------------
+
+// 파일경로: src/first/second/fourth/Main.java
+package first.second.fourth;
+import first.second.third.Calculator; // 불러올 클래스의 패키지경로를 작성
+// 만약 third 패키지의 모든 클래스를 가져오고 싶다면: 
+// first.second.third.*;
+
+public class Main {
+  public static void main(String[] args) {
+    Calculator cal = new Calculator();
+     
+    int result = cal.plus(10, 20);
+    System.out.println("결과: " + result);
+  }
+}
+```
+---
