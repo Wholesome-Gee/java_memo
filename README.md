@@ -309,7 +309,6 @@ public class Main {
 ### 📚상속 
 **🏷️ 부모클래스 멤버를 자식클래스가 물려받아 사용할 수 있는것(extneds,super,sub,override,overloading)**
 - 상속을 사용하는 이유 : 코드의 재사용, 유지보수 관리, 다형성
-- 부모의 private 멤버를 자식 클래스가 참고할 수 있지만, 수정할 수 없다.
 - 부모의 메소드를 자식 메소드에서 재정의하고 싶을땐 `@Override`를 사용한다. (생략가능)
 - Override : 부모의 메소드를 자식클래스에서 재정의 하는것.
 - Overloading : 같은 클래스 내부에서 같은 이름의 메서드를 여러개 만드는것. (parameter의 타입이나 개수가 다르다)
@@ -400,6 +399,272 @@ public class Main {
      
     int result = cal.plus(10, 20);
     System.out.println("결과: " + result);
+  }
+}
+```
+---
+### 📚 접근 제어자
+**🏷️public, private**
+- public은 같은 클래스, 같은 패키지, 자식 클래스, 그 외 다 접근할 수 있다.
+- protected는 같은 클래스, 같은 패키지, 자식 클래스에서만 접근할 수 았다.
+- default는 같은 클래스, 같은 패키지에서만 접근할 수 있다.
+- private는 같은 클래스에서만 접근할 수
+![alt text](./img/image1.png)
+```java
+// 📂 java/main/main.class
+class Test {
+  public String a() {
+    return "public a()";
+  }
+  private String b() {
+    return "private b()";
+  }
+  public String c() {
+    System.out.println("public c()");
+    return b();
+  }
+}
+
+public class Main {
+  public static void main (String[] args) {
+    Test test = new Test();
+    System.out.println(test.a()); // "public a()"
+    System.out.println(test.b()); // error!
+    System.out.println(test.c()); // "public c()" "public b()"
+  }
+}
+
+// 📂 java/sub/sub.class
+public class Main {
+  public static void main (String[] args) {
+    Test test = new Test();
+    System.out.println(test.a()); // "public a()"
+    System.out.println(test.b()); // error!
+    System.out.println(test.c()); // "public c()" "public b()"
+  }
+}
+```
+---
+### 📚 추상 클래스 (abstract)
+**🏷️ 추상 메소드와 추상 클래스**
+- 추상 메소드를 포함하고 있는 클래스를 추상 클래스라고 한다.
+- 추상 메소드는 실행문이 없고 정의만 되어있다.
+- 추상 클래스 내부에 일반 메소드가 있어도 상관없다.
+- 추상 클래스는 직접 인스턴스를 생성할 수 없다.
+- 추상 클래스는 상속을 강제하기 위한 것. 그래서 부모 클래스엔 메소드를 정의만 해놓고 실행문은 자식 클래스에게 위임한다.
+```java
+// class A는 추상메소드 b를 포함하고 있기에 추상 클래스가 된다.
+abstract class A {
+  public abstract int b(); // 추상 메소드 정의
+  // public abstract int c(){System.out.println("c();")}; 
+  // error! 추상 메소드는 실행문이 없다.
+  public void d(){
+    // 추상 클래스 내부에 일반 메소드가 존재할 수 있다.
+    System.out.println("d();");
+  }
+}
+
+public class B extends A {
+  // A 클래스의 추상 메소드 b()를 상속받아 재정의(Override)
+  @Override
+  public int b(){
+    System.out.println("b();");
+    return 1;
+  }
+}
+
+public class Main {
+  public static void main(String[] args){
+    // A obj = new A();  추상 클래스는 직접 인스턴스 생성 불가
+    B obj = new B();
+    obj.b(); // b();
+    obj.d(); // d();
+  }
+}
+```
+---
+### 📚 final (상수화)
+**🏷️ final은 마치 javascript의 const와 유사하다.**
+- final 변수 → 값 변경 금지
+- final 메소드 → 재정의(override) 금지
+- final 클래스 → 상속 금지
+```java
+// final 변수
+final String url = "https://naver.com"; 
+public static final int SITE_URL = "https://naver.com";  // public static final은 대문자와 언더바를 사용
+
+// final 메소드
+public final void print(){
+  System.out.println("출력완료");
+}
+public final int one(){
+  return 1;
+}
+
+// final 클래스
+public final class One {
+  ...
+}
+```
+---
+### 📚 인터페이스(interface, implements)
+**🏷️인터페이스를 상속받은 클래스는 인터페이스의 메소드 사용을 강제한다.**
+- 클래스에 인터페이스를 상속시킬 땐 implements를 사용한다.
+- interface에는 몇가지 규칙이 있다.  
+  1. interface내부의 멤버들은 public이어야 한다.  
+  2. 하나의 클래스는 여러개의 interface를 구현할 수 있다. `implements I1,I2`
+  3. interface에 다른 interface를 상속할 수 있다. `interface I1 extends I2 {}` 
+```java
+// 1. 인터페이스 선언 (규격 만들기)
+interface RemoteControl {
+  void turnOn();  
+  void turnOff();
+}
+
+// 2. 인터페이스 구현 (implements)
+class SamsungTV implements RemoteControl {
+  @Override
+  public void turnOn() {
+    System.out.println("삼성 TV를 켭니다.");
+  }
+  @Override
+  public void turnOff() {
+    System.out.println("삼성 TV를 끕니다.");
+  }
+}
+// 3. 인터페이스 구현 (implements)
+class LgTV implements RemoteControl {
+  @Override
+  public void turnOn() {
+    System.out.println("LG TV의 전원이 켜집니다.");
+  }
+  @Override
+  public void turnOff() {
+    System.out.println("LG TV의 전원이 꺼집니다.");
+  }
+}
+```
+---
+### 📚 다형성
+**🏷️다형성은 하나의 객체가 여러가지 형태를 가질 수 있는 성질이다.**
+```java
+// 메소드와 다형성
+// 한 클래스 내에서 동일한 메소드의 parameter 타입이나 개수를 다르게하여 여러 형태를 가질 수 있음
+class Obj {
+  public void a(int param){
+    System.out.println("int");
+    System.out.println(param);
+  }
+  public void a(String param){
+    System.out.println("string");
+    System.out.println(param);
+  }
+}
+
+public class Main {
+  public static void main(String[] args){
+    Obj obj = new Obj();
+    obj.a(100);
+    obj.a("100");
+  }
+}
+
+// 클래스와 다형성
+// 클래스의 데이터타입은 사용가능한 멤버의 범위를 결정하고
+// 인스턴스가 생성될때는 생성자의 로직을 따른다.
+class A {
+  public String x(){ return "A.x"; }
+}
+class B extends A {
+  @Override
+  public String x(){ return "B.x"; }
+  public String y(){ return "y"; }
+}
+public class Main {
+  public static void main(String[] args){
+    // 1. 클래스 B의 생성자로 인스턴스를 생성
+    // 2. 생성된 인스턴스를 obj변수에 담고 데이터 타입을 클래스 A로 지정
+    // 3. obj는 클래스 A,B의 공통 멤버만을 참조할 수 있다.
+    A obj = new B();
+    System.out.println(obj.x());  // "B.x", x()가 override 되었기때문
+    // System.out.println(obj.y());  →  에러발생!
+  }
+}
+------------------------------------------------------------------
+class C extends A {
+  public String x(){ return "C.x";}
+}
+
+public class Main2 {
+  public static void main(String[] args){
+    A obj = new B();
+    A obj2 = new C();
+    System.out.println(obj.x());  // "B.x"
+    System.out.println(obj2.x());  // "C.x"
+    // B,C 클래스에 x()가 override 되지 않았다면 "A.x"가 나왔을 것이다.
+  }
+}
+
+
+// 인터페이스와 다형성
+interface I1 {
+  public String A();
+}
+interface I2 {
+  public String B();
+}
+class D implements I1,I2 {
+  public String A() {
+    return "A";
+  }
+  public String B() {
+    return "B";
+  }
+}
+public class Main {
+  public static void main (String[] args){
+    D obj = new D();
+    I1 obj2 = new D();
+    I2 obj3 = new D();
+
+    obj.A();  // "A" 
+    obj.B();  // "B"
+
+    obj2.A();  // "A"
+    obj2.B();  // error!
+
+    obj3.A();  // error!
+    obj3.B();  // "B"
+  }
+}
+
+// Kim과 Lee는 부부다. 
+// Kim은 아빠, 프로그래머, 기독교이다.
+// Lee는 엄마, 프로그래머이다.
+interface father {}
+interface mother {}
+interface programmer {
+  public void coding();
+}
+interface christian {}
+
+class Kim implements father, programmer, christian {
+  public void coding() {
+    System.out.println("프론트엔드 개발자");
+  }
+}
+class Lee implements mother, programmer {
+  public void coding() {
+    System.out.println("백엔드 개발자");
+  }
+}
+public class Company {
+  public static void main(String[] args) {
+    programmer worker1 = new Kim();
+    programmer worker2 = new Lee();
+
+    worker1.coding();  // "프론트엔드 개발자"
+    worker2.coding();  // "백엔드 개발자"
   }
 }
 ```
