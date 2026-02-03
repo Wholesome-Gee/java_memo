@@ -669,3 +669,211 @@ public class Company {
 }
 ```
 ---
+### 📚 예외처리 (try catch, finally, throw )
+**🏷️try catch 사용법** 
+- try { 실행문 } catch(에러타입 e1, 에러타입 e2...){ 예외처리 }
+- e. getMessage() : error 메시지 전달
+- e. toString() : error 타입 + 메시지 전달
+- e. toString() : error 라인 + 타입 + 메시지 전달
+- 예외처리 시 `catch(Exception e)`는 다른 error타입보다 나중에 작성되어야 한다.
+
+**🏷️finally 사용법** 
+- finally는 예외 여부와 관계없이 db연결 종료, 파일 닫기 등 '뒷정리' 작업을 할 때 쓰인다.
+
+**🏷️ throws 사용법 (아래 예시2참조)**
+- 예시2를 예시3으로 바꿀 수 있다. (throws를 사용하는 방법만 참고할것, 예시자체는 바른 예시가 아님)
+- 예시4처럼 throw new로 에러를 커스텀 할 수 있다.
+```java
+// 예시 1
+class A {
+  private int[] arr = new int[3];
+  A(){
+    arr[0]=0;
+    arr[1]=10;
+    arr[2]=20;
+  }
+  public void z(int first, int second){
+    try {
+      System.out.println("실행문 실행 ");  // 실행
+      System.out.println(arr[first] / arr[second]);  // error발생!
+      System.out.println("실행문 실행 완료!");  // 미실행
+    } catch(ArithmeticException e) {
+      // 
+      // error 메시지 전달
+      System.out.println("\n e.getMessage() : \n" + e.getMessage());  
+      // error 타입 + 메시지 전달
+      System.out.println("\n e.toString() : \n" + e.toString()); 
+      // error 라인 + 타입 + 메시지 전달
+      System.out.println("\n e.printStackTrace() : \n" );
+      e.printStackTrace();
+    } catch(ArrayIndexOutOfBoundsException e) {
+      // paramter의 수량이 안맞을때
+      System.out.println("\n e.getMessage() : \n" + e.getMessage());  
+      System.out.println("\n e.toString() : \n" + e.toString()); 
+      System.out.println("\n e.printStackTrace() : \n" );
+      e.printStackTrace();  
+    } catch(Exception e) {
+      // 그 외 다른 에러 발생 시 필터
+       System.out.println("\n e.getMessage() : \n" + e.getMessage());  
+      System.out.println("\n e.toString() : \n" + e.toString()); 
+      System.out.println("\n e.printStackTrace() : \n" );
+      e.printStackTrace();
+    }
+    finally {
+      // 예외 여부와 관계없이 무조건 실행되는 로직
+    }
+    System.out.println("divide 메서드 종료"); // 마지막 실행
+  }
+}
+public class Main {
+  public static void main(String[] args) {
+    A a = new A();
+    a.z(10,1);
+  }
+}
+
+---------------------------------------------------------------------
+// 예시 2
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+
+class B {
+  void run() {
+    BufferedReader br = null;
+    String input = null;
+    try {
+      br = new BufferedReader(new FileReader("out.txt"));
+    } catch (FileNotFoundException e) {
+      // FileReader 자체에서 나오는 에러를 처리
+      e.printStackTrace();
+    }
+    try {
+      input = br.readLine();  // readLine은?
+    } catch(IOException e) {
+      // readLine 자체에서 나오는 에러를 처리
+      e.printStackTrace();
+    }
+    System.out.println(input)
+  }
+}
+
+// 예시3
+class B {
+  // b.run()의 사용자는 FileNotFoundException, IOException 에러처리를 강제받는다.
+  void run() throws FileNotFoundException, IOException {
+    BufferedReader br = null;
+    String input = null;
+    br = new BufferedReader(new FileReader("out.txt"));
+    input = br.readLine();
+    System.out.println(input)
+  }
+}
+class C {
+  void run() throws FileNotFoundException, IOException {
+    B b = new B();
+    b.run();
+  }
+}
+public class Main {
+  public static void main(String[] args) {
+    C c = new C();
+    try {
+      c.run();
+    } catch (FileNotFoundException e) {
+      // FileNotFoundException은 IOException을 상속 받기때문에 생략해도 상관없긴함.
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+}
+
+----------------------------------------------------------------
+//예시 4
+class A {
+  int left, right;
+  public void setLR(int left, int right) {
+    this.left = left;
+    this.right = right;
+  }
+
+  public void divide() {
+    if(right == 0) {
+      // 에러 커스텀
+      throw new ArithmeticException("0으로 나눌 수 없다.");
+    }
+    try { 
+      System.out.println("계산결과는")
+      System.out.println(this.left / this.right);
+    } catch(Exception e) {
+      e.printStackTrace();
+    }
+  }
+}
+
+public class Main {
+  public static void main(String[] args) {
+    A a = new a();
+    a.setLR(10,0);
+    try {
+      a.divide();
+    } catch(Exception e) {
+      System.out.println(e.getMessage());  // 0으로 나눌 수 없다.
+    }
+  }
+}
+```
+---
+### 📚 Object Class
+**🏷️Object Class란?**
+- Object Class는 모든 클래스의 조상이다.
+- Object Class에는 많은 메소드들이 존재하고,  
+  모든 클래스는 Object Class를 상속받기에 Object Class의 메소드를 사용할 수 있다.
+```java
+class O {} // `class O extends Object {}` 와 같다. 
+O.toString() // toString()은 대표적인 Object Class의 메소드다. 
+```
+---
+### 📚 상수 (enum)
+**🏷️상수들의 집합**
+- enum Fruit { APPLE, BANANA, PEACH }
+```java
+enum Fruit {
+  APPLE("RED"), PEACH("PINK"), BANANA("YELLOW");
+  private String color;
+  public String getColor(){
+    return this.color;
+  }
+  Fruit(String color) {
+    System.out.println("Call Contstructor" + this);
+    this.color = color;
+  }
+}
+
+public class Main {
+  public static void main(String[] args) {
+    Fruit type = Fruit.APPLE;
+
+    for(Fruit fruit : Fruit.values()){
+      System.out.println("fruit is " + fruit);
+    }
+    switch(type) {
+      case APPLE:
+        System.out.println(57 + "kcal, color is " + FRUIT.APPLE.getColor());
+        break;
+        case PEACH:
+        System.out.println(34 + "kcal, color is " + FRUIT.PEACH.getColor());
+        break;
+        case BANANA:
+        System.out.println(93 + "kcal, color is " + FRUIT.BANANA.getColor());
+        break;
+    }
+  }
+}
+
+```
+---
+
+
